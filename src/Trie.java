@@ -17,8 +17,8 @@ class Trie {
         }
         temp.setEnd(temp.getFreq() + freq);
     }
-
-    public List<String> top3(String s) { // prefix
+    // return top K frequently searched sentences
+    public List<String> topK(String s, int k) { // prefix
         List<String> res = new ArrayList<>();
         PriorityQueue<Map.Entry<String, Integer>> pq = new PriorityQueue<>(
                 (a, b) -> a.getValue() == b.getValue() ? b.getKey().compareTo(a.getKey()) : a.getValue() - b.getValue()
@@ -30,7 +30,7 @@ class Trie {
             sb.append(s.charAt(i));
             temp = temp.getChild(s.charAt(i));
         }
-        dfs(temp, pq, sb);
+        dfs(temp, pq, k,sb);
         int size = pq.size() - 1;
         for (int i = 0; i <= size; ++i)
             res.add("");
@@ -41,20 +41,20 @@ class Trie {
         return res;
     }
 
-    public void dfs(TrieNode node, PriorityQueue<Map.Entry<String, Integer>> pq, StringBuilder sb) {
+    public void dfs(TrieNode node, PriorityQueue<Map.Entry<String, Integer>> pq,int k, StringBuilder sb) {
         if (node == null) return;
         if (node.isEndOfTheWord()) {
             HashMap<String, Integer> map = new HashMap<>();
             map.put(sb.toString(), node.getFreq());
             pq.add(map.entrySet().iterator().next());
-            if (pq.size() > 3) {
+            if (pq.size() > k) {
                 pq.poll();
             }
         }
         for (char ch = 0; ch < 128; ++ch) {
             if (node.hasChild(ch)) {
                 sb.append(ch);
-                dfs(node.getChild(ch), pq, sb);
+                dfs(node.getChild(ch), pq,k, sb);
                 sb.setLength(sb.length() - 1);
             }
         }
